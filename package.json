@@ -1,0 +1,27 @@
+{
+  "name": "bookish",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc index.ts && node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WilfredSalmon/Bookish.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WilfredSalmon/Bookish/issues"
+  },
+  "homepage": "https://github.com/WilfredSalmon/Bookish#readme",
+  "dependencies": {
+    "@types/node": "^12.0.10",
+    "express": "^4.17.1",
+    "pg-promise": "^8.7.2"
+  },
+  "devDependencies": {},
+  "description": ""
+}
