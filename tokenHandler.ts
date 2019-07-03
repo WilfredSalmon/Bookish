@@ -29,7 +29,5 @@ export default class TokenHandler {
         }));
     }
 
-    static authenticateToken() {
-        return passport.authenticate('jwt',{session: false})
-    }
+    public static readonly tokenAuthentication = passport.authenticate('jwt',{session: false});
 }

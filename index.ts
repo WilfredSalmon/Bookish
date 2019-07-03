@@ -14,7 +14,7 @@ console.log('logged into db');
 TokenHandler.setUpPassportVerification(db);
 console.log('Passport set up')
 
-app.get('/catalogue',TokenHandler.authenticateToken(), (req,res) => {
+app.get('/catalogue',TokenHandler.tokenAuthentication, (req,res) => {
     db.any('SELECT * FROM public."Books"')
         .then( data => res.send(data));
 });
