@@ -11,22 +11,12 @@ const link = 'postgres://bookish:tabletennis@intwilsal.zoo.lan:5432/bookish';
 const db = pgp(link);
 console.log('logged into db');
 
-app.get('/catalogue', (req,res) => {
-    TokenHandler.validateToken(db)
-        .then(
-            valid => {
-                if ( valid ) {
-                    return db.any('SELECT * FROM public."Books"');
-                } else {
-                    throw new Error('Invalid token');
-                }
-            },
-            error => {
-                throw error;
-            }
-        )
-        .then(data => res.send(data))
-        .catch(error => res.send(error));
+TokenHandler.setUpPassportVerification(db);
+console.log('Passport set up')
+
+app.get('/catalogue',TokenHandler.authenticateToken(), (req,res) => {
+    db.any('SELECT * FROM public."Books"')
+        .then( data => res.send(data));
 });
 
 app.get('/login', (req,res) => {

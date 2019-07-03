@@ -8,13 +8,13 @@ export default class TokenHandler {
         return jwt.sign({username:username},'theCakeIsALie');
     }
 
-    static validateToken(db): Promise<boolean> {
+    static setUpPassportVerification(db): void {
         const options = {
             'secretOrKey': 'theCakeIsALie',
             'jwtFromRequest': req => req.query.token
         };
 
-        return passport.use( new JwtStrategy(options, (jwt_payload, done) => {
+        passport.use( new JwtStrategy(options, (jwt_payload, done) => {
             db.any('SELECT * FROM public."Users" WHERE username = $1', [jwt_payload.username])
                 .then(
                     data => {
@@ -27,5 +27,9 @@ export default class TokenHandler {
                 )
                 .catch( e => done(e));
         }));
+    }
+
+    static authenticateToken() {
+        return passport.authenticate('jwt',{session: false})
     }
 }
