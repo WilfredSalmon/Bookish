@@ -1,4 +1,6 @@
 import TokenHandler from './tokenHandler';
+import createLoansEndpoint from './loans';
+import createSearchEndpoint from './search';
 import Catalogue from './catalouge';
 
 const express = require('express');
@@ -18,8 +20,8 @@ Catalogue.updateDataBase(db);
 app.use('/Catalogue', Catalogue.router);
 
 app.get('/login', (req,res) => {
-    const username = req.query.username.toLowerCase();
-    const password = req.query.password;
+    const username : string = req.query.username.toLowerCase();
+    const password : string = req.query.password;
 
     db.any('SELECT * FROM public."Users" WHERE username = $1 AND password = $2',[username,password])
         .then(data=> {
@@ -32,5 +34,9 @@ app.get('/login', (req,res) => {
         .catch( e => console.log(e));
 
 });
+
+createLoansEndpoint(app,db);
+
+createSearchEndpoint(app,db);
 
 app.listen(port, () => console.log(`Bookish listening on port ${port}!`));
