@@ -8,6 +8,7 @@ class Catalogue {
     constructor() {
         this.router = Router();
         this.router.get('/', TokenHandler.tokenAuthentication, this.displayCatalogue.bind(this));
+        this.router.get('/:ISBN', TokenHandler.tokenAuthentication, this.displayBookCopies.bind(this));
     }
 
     displayCatalogue(req,res) {
@@ -26,6 +27,10 @@ class Catalogue {
             ORDER BY title`;
         
         this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
+    }
+
+    displayBookCopies(req,res) {
+        res.send((req.params.ISBN));
     }
 
     updateDataBase(db) {

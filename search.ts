@@ -11,13 +11,13 @@ export default function createSearchEndpoint ( app, db ) {
                 res.error('No search parameters');
                 return;
             } else {
-                condition = `author LIKE '${author}'`;
+                condition = `"authorName" LIKE UPPER('%${author.toUpperCase()}%')`;
             }
         } else {
             if ( author === undefined ) {
-                condition = `title LIKE '${title}'`;
+                condition = `title LIKE UPPER('%${title.toUpperCase()}%')`;
             } else {
-                condition = `author LIKE '${author}' AND title LIKE '${title}'`;
+                condition = `"authorName" LIKE UPPER('%${author.toUpperCase()}%') AND title LIKE UPPER('%${title.toUpperCase()}%')`;
             }
         }
     
