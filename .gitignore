@@ -63,4 +63,4 @@ typings/
 .next
 
 # Javascript files
-.js
+*.js
