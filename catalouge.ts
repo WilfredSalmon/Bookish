@@ -8,7 +8,7 @@ class Catalogue {
     constructor() {
         this.router = Router();
         this.router.get('/', TokenHandler.tokenAuthentication, this.displayCatalogue.bind(this));
-        this.router.get('/:isbn', TokenHandler.tokenAuthentication, this.displayBookCopies.bind(this))
+        this.router.get('/:ISBN', TokenHandler.tokenAuthentication, this.displayBookCopies.bind(this));
     }
 
     displayCatalogue(req,res) {
@@ -30,7 +30,7 @@ class Catalogue {
     }
 
     displayBookCopies(req,res) {
-        const isbn = req.params.isbn;
+        const isbn = req.params.ISBN;
 
         const query = `
             SELECT username, "endDate"
@@ -40,9 +40,10 @@ class Catalogue {
             WHERE
                 books.available = false
                 AND "endDate" >= current_date
+                AND books."ISBN" = $1
             ORDER BY loans."endDate"`;
 
-        this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
+        this.db.any(query,[isbn]).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
     }
 
     updateDataBase(db) {
