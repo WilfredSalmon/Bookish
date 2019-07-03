@@ -1,4 +1,5 @@
 import TokenHandler from './tokenHandler';
+import createLoansEndpoint from './loans';
 
 const express = require('express');
 const pgp = require('pg-promise')();
@@ -34,13 +35,6 @@ app.get('/login', (req,res) => {
 
 });
 
-app.get('/loans', TokenHandler.tokenAuthentication, (req,res) => {
-    const username = req.user;
-    db.any('SELECT title, "startDate", "endDate" FROM public."Loans" as loans JOIN public."Books" as books ON books.id = loans."bookId" JOIN public."BookInfo" as book ON book."ISBN" = books."ISBN" WHERE username = $1', [username])
-        .then( data => {
-            res.send(data);
-        })
-        .catch ( e => console.log(e) );
-});
+createLoansEndpoint(app,db);
 
 app.listen(port, () => console.log(`Bookish listening on port ${port}!`));
