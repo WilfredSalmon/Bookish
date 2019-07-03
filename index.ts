@@ -12,7 +12,6 @@ const db = pgp(link);
 console.log('logged into db');
 
 TokenHandler.setUpPassportVerification(db);
-console.log('Passport set up')
 
 app.get('/catalogue',TokenHandler.tokenAuthentication, (req,res) => {
     db.any('SELECT * FROM public."Books"')
