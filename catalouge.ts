@@ -8,6 +8,7 @@ class Catalogue {
     constructor() {
         this.router = Router();
         this.router.get('/', TokenHandler.tokenAuthentication, this.displayCatalogue.bind(this));
+        this.router.get('/:isbn', TokenHandler.tokenAuthentication, this.displayBookCopies.bind(this))
     }
 
     displayCatalogue(req,res) {
@@ -25,6 +26,22 @@ class Catalogue {
             GROUP BY title, isbn, available, total
             ORDER BY title`;
         
+            this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
+    }
+
+    displayBookCopies(req,res) {
+        const isbn = req.params.isbn;
+
+        const query = `
+            SELECT username, "endDate"
+            FROM public."Books" as books
+            JOIN public."Loans" as loans 
+                ON books.id = loans."bookId"
+            WHERE
+                books.available = false
+                AND "endDate" >= current_date
+            ORDER BY loans."endDate"`;
+
         this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
     }
 
