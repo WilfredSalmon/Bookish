@@ -5,6 +5,7 @@ const JwtStrategy = require('passport-jwt').Strategy;
 export default class TokenHandler {
 
     private static readonly encryptionKey: string = 'theCakeIsALie';
+    public static readonly tokenAuthentication = passport.authenticate('jwt',{session: false});
 
     static getToken(username: string): string {
         return jwt.sign({username:username},this.encryptionKey);
@@ -32,6 +33,4 @@ export default class TokenHandler {
 
         console.log('Passport set up');
     }
-
-    public static readonly tokenAuthentication = passport.authenticate('jwt',{session: false});
 }
