@@ -1,4 +1,5 @@
 import TokenHandler from './tokenHandler';
+import createLoansEndpoint from './loans';
 
 const express = require('express');
 const pgp = require('pg-promise')();
@@ -13,7 +14,7 @@ console.log('logged into db');
 
 TokenHandler.setUpPassportVerification(db);
 
-app.get('/catalogue',TokenHandler.tokenAuthentication, (req,res) => {
+app.get('/catalogue', TokenHandler.tokenAuthentication, (req,res) => {
     db.any('SELECT * FROM public."Books"')
         .then( data => res.send(data));
 });
@@ -33,5 +34,7 @@ app.get('/login', (req,res) => {
         .catch( e => console.log(e));
 
 });
+
+createLoansEndpoint(app,db);
 
 app.listen(port, () => console.log(`Bookish listening on port ${port}!`));
