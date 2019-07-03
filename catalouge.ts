@@ -26,11 +26,24 @@ class Catalogue {
             GROUP BY title, isbn, available, total
             ORDER BY title`;
         
-        this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
+            this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
     }
 
     displayBookCopies(req,res) {
-        res.send((req.params.ISBN));
+        const isbn = req.params.ISBN;
+
+        const query = `
+            SELECT username, "endDate"
+            FROM public."Books" as books
+            JOIN public."Loans" as loans 
+                ON books.id = loans."bookId"
+            WHERE
+                books.available = false
+                AND "endDate" >= current_date
+                AND books."ISBN" = $1
+            ORDER BY loans."endDate"`;
+
+        this.db.any(query,[isbn]).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
     }
 
     updateDataBase(db) {
