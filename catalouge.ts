@@ -22,7 +22,8 @@ class Catalogue {
             ) as catalogue
             JOIN public."AuthoredBy" as authored
                 ON catalogue.isbn = authored."ISBN"
-            GROUP BY title, isbn, available, total`;
+            GROUP BY title, isbn, available, total
+            ORDER BY title`;
         
         this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
     }
