@@ -1,5 +1,6 @@
 import TokenHandler from './tokenHandler';
 import createLoansEndpoint from './loans';
+import createSearchEndpoint from './search';
 
 const express = require('express');
 const pgp = require('pg-promise')();
@@ -20,8 +21,8 @@ app.get('/catalogue', TokenHandler.tokenAuthentication, (req,res) => {
 });
 
 app.get('/login', (req,res) => {
-    const username = req.query.username.toLowerCase();
-    const password = req.query.password;
+    const username : string = req.query.username.toLowerCase();
+    const password : string = req.query.password;
 
     db.any('SELECT * FROM public."Users" WHERE username = $1 AND password = $2',[username,password])
         .then(data=> {
@@ -36,5 +37,7 @@ app.get('/login', (req,res) => {
 });
 
 createLoansEndpoint(app,db);
+
+createSearchEndpoint(app,db);
 
 app.listen(port, () => console.log(`Bookish listening on port ${port}!`));
