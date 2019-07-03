@@ -13,7 +13,10 @@ class Catalogue {
     displayCatalogue(req,res) {
         this.db.any('SELECT * FROM public."Books"')
             .then( jsonOfBooks => {
-                const promisesOfTitles = jsonOfBooks.map(book => this.db.any('SELECT title FROM public."BookInfo" WHERE "ISBN" = $1', book.ISBN));
+                const promisesOfTitles = jsonOfBooks.map(book => {
+                    this.db.any('SELECT * FROM public."BookInfo" WHERE "ISBN" = $1', book.ISBN)
+                        .then(return )
+                });
                 return Promise.all(promisesOfTitles)
             })
             .then( listOfBooks => res.send(
