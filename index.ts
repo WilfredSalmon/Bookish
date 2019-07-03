@@ -1,6 +1,7 @@
 import TokenHandler from './tokenHandler';
 import createLoansEndpoint from './loans';
 import createSearchEndpoint from './search';
+import Catalogue from './catalouge';
 
 const express = require('express');
 const pgp = require('pg-promise')();
@@ -14,11 +15,9 @@ const db = pgp(link);
 console.log('logged into db');
 
 TokenHandler.setUpPassportVerification(db);
+Catalogue.updateDataBase(db);
 
-app.get('/catalogue', TokenHandler.tokenAuthentication, (req,res) => {
-    db.any('SELECT * FROM public."Books"')
-        .then( data => res.send(data));
-});
+app.use('/Catalogue', Catalogue.router);
 
 app.get('/login', (req,res) => {
     const username : string = req.query.username.toLowerCase();
