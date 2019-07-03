@@ -30,7 +30,7 @@ app.get('/catalogue', (req,res) => {
 });
 
 app.get('/login', (req,res) => {
-    const username = req.query.username;
+    const username = req.query.username.toLowerCase();
     const password = req.query.password;
 
     db.any('SELECT * FROM public."Users" WHERE username = $1 AND password = $2',[username,password])
