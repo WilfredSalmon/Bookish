@@ -5,7 +5,7 @@ const pgp = require('pg-promise')();
 const app = express();
 const port = 3000;
 
-const link = 'postgres://bookish:tabletennis@localhost:5432/bookish';
+const link = 'postgres://bookish:tabletennis@intwilsal.zoo.lan:5432/bookish';
 
 const db = pgp(link);
 console.log('logged into db');
