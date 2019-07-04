@@ -1,12 +1,24 @@
 import TokenHandler from './tokenHandler';
+const fs = require('fs');
+const request = require('request');
 
 function addBookAlreadyInCatalogue(db,numberToAdd:number = 1,ISBN:string,res) {
 
-    const query = `INSERT INTO public."Books" ("ISBN",available) VALUES ($1,true)`;
+    const query = `INSERT INTO public."Books" ("ISBN",available) VALUES ($1,true) RETURNING id`;
+
+    const barcodePromises = [];
 
     for(let i =0;i<numberToAdd;i++) {
-        db.any(query, ISBN).catch(e => console.log(e));
+        db.any(query, ISBN).catch(e => console.log(e))
+            .then( id => {
+                barcodePromises.push(new Promise(resolve => {
+                        return request(`http://barcodes4.me/barcode/c128b/${id[0].id}-${ISBN}.png`, (error, response, body) => resolve(body))
+                    }
+                ))
+            });
     }
+
+    Promise.all(barcodePromises).then( images => images.map(image => console.log('logging an image')) );
 
     res.send('done')
 
