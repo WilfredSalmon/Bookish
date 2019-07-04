@@ -3,6 +3,7 @@ import TokenHandler from './tokenHandler';
 function addBookAlreadyInCatalogue(db,numberToAdd:number = 1,ISBN:string,res) {
 
     const query = `INSERT INTO public."Books" ("ISBN",available) VALUES ($1,true)`;
+
     for(let i =0;i<numberToAdd;i++) {
         db.any(query, ISBN).catch(e => console.log(e));
     }
@@ -34,7 +35,7 @@ export default function createAddBookEndpoint ( app, db ) : void {
                 //The book already exists
 
                 if (checkConsistency(req, bookInfo,res)) {
-                    addBookAlreadyInCatalogue(db,req.numberToAdd,bookInfo.ISBN,res);
+                    addBookAlreadyInCatalogue(db,req.query.numberToAdd,bookInfo.ISBN,res);
                 }
 
 
