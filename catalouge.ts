@@ -35,12 +35,20 @@ class Catalogue {
                        JOIN public."Books" as books ON books.id = Loans."bookId"
                        WHERE books."ISBN" = $1 AND NOT books.available`;
 
-        const loans = this.db.any(queryForLoans,req.params.ISBN)
+        const loans: Promise<Array<any>> = this.db.any(queryForLoans,req.params.ISBN)
             .then ( json => json.map((loan) => {
                 const endDateFormatted = moment.tz(loan.endDate, "UTC").tz("Europe/London").format('YYYY-MM-DD');
                 return {username: loan.username, endDate: endDateFormatted};
             })).catch( error => { console.log(error); res.send(error) } )
 
+        const queryForTotalAvailable: string = `SELECT count(*) as total, sum(case when available then 1 else 0 end) as available 
+                                                FROM (
+                                                SELECT * FROM public."Books" WHERE "ISBN" = $1) 
+                                                as copies GROUP BY copies."ISBN"`;
+        const totalAndAvailibilty: Promise<Array<any>> = this.db.any(queryForTotalAvailable,req.params.ISBN)
+
+        Promise.all([totalAndAvailibilty,loans])
+            .then( (listOfBookInfo)=> res.send({total: listOfBookInfo[0][0].total, available: listOfBookInfo[0][0].available, loans: listOfBookInfo[1]}))
     }
 
     updateDataBase(db) {
