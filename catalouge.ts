@@ -27,7 +27,7 @@ class Catalogue {
             GROUP BY title, isbn, available, total
             ORDER BY title`;
         
-        this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
+            this.db.any(query).then ( json => res.send(json) ).catch( error => { console.log(error); res.send(error) } );
     }
 
     displayBookCopies(req,res) {
@@ -41,7 +41,6 @@ class Catalogue {
                 return {username: loan.username, endDate: endDateFormatted};
             })).catch( error => { console.log(error); res.send(error) } )
 
-        //const queryFor
     }
 
     updateDataBase(db) {
