@@ -15,8 +15,8 @@ const db = pgp(link);
 console.log('logged into db');
 
 TokenHandler.setUpPassportVerification(db);
-Catalogue.updateDataBase(db);
 
+Catalogue.updateDataBase(db);
 app.use('/Catalogue', Catalogue.router);
 
 app.get('/login', (req,res) => {

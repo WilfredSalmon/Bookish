@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import TokenHandler from './tokenHandler';
+const moment = require('moment-timezone');
 
 class Catalogue {
     public router;
@@ -30,7 +31,17 @@ class Catalogue {
     }
 
     displayBookCopies(req,res) {
-        res.send((req.params.ISBN));
+        const queryForLoans = `SELECT username, "endDate" FROM public."Loans" as Loans
+                       JOIN public."Books" as books ON books.id = Loans."bookId"
+                       WHERE books."ISBN" = $1 AND NOT books.available`;
+
+        const loans = this.db.any(queryForLoans,req.params.ISBN)
+            .then ( json => json.map((loan) => {
+                const endDateFormatted = moment.tz(loan.endDate, "UTC").tz("Europe/London").format('YYYY-MM-DD');
+                return {username: loan.username, endDate: endDateFormatted};
+            })).catch( error => { console.log(error); res.send(error) } )
+
+        //const queryFor
     }
 
     updateDataBase(db) {

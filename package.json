@@ -21,6 +21,8 @@
     "@types/node": "^12.0.10",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.25",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "pg-promise": "^8.7.2"
