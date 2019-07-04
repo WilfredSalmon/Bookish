@@ -5,9 +5,16 @@ export default function createAddBookEndpoint ( app, db ) : void {
         const ISBN = req.query.ISBN;
 
         bookExists(db, ISBN)
-            .then ( data => {
+            .then ( (bookInfo:any) => {
                 //The book already exists
-                res.send(data)
+                let constistent = true;
+                if (req.query.title && req.query.title != bookInfo.title) {
+                    constistent = false;
+                    res.send(`Title is inconsistent. Query= ${req.query.title}, bookInfo= ${bookInfo.title}`);
+                } else {
+                    res.send('Consistent with title')
+                }
+
 
             }, () => {
                 //The book does not exist
@@ -27,9 +34,12 @@ function bookExists(db, ISBN) {
             GROUP BY bookinfo."ISBN", title`;
 
         db.any(isBookKnown,[ISBN])
-            .then ( data => {
-                if ( data.length > 0 ) {
-                    resolve(data)
+            .then ( bookWithISBN => {
+                if ( bookWithISBN.length > 0 ) {
+                    if(bookWithISBN.length > 1) {
+                        console.log('More than one book with this ISBN in bookInfo? Taking first instance')
+                    }
+                    resolve(bookWithISBN[0]);
                 } else {
                     reject()
                 }
