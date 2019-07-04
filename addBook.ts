@@ -12,6 +12,21 @@ function addBookAlreadyInCatalogue(db,numberToAdd:number = 1,ISBN:string,res) {
 
 }
 
+function addNewBook(db, numberToAdd:number = 1, ISBN:string, title:string, authors:string[], res) {
+    const registerBookType:string = 'INSERT INTO public."BookInfo" ("ISBN", title) VALUES ($1, $2)'
+
+    db.any(registerBookType, [ISBN, title])
+        .then ( addAuthorInfo(db,ISBN, authors) )
+        .catch ( e => console.log(e) )
+        .then ( () => {addBookAlreadyInCatalogue ( db, numberToAdd, ISBN, res )});
+}
+
+function addAuthorInfo ( db, ISBN:string, authors:string[] ) {
+    const addAuthorInfo:string = 'INSERT INTO public."AuthoredBy" ("ISBN", "authorName") VALUES ($1, $2)';
+    const authorPromises = authors.map(author=>db.any(addAuthorInfo,[ISBN,author]));
+    return Promise.all(authorPromises); 
+}
+
 function checkConsistency(req, bookInfo: any,res) {
     let consistent = true;
     if (req.query.title && req.query.title != bookInfo.title) {
@@ -41,11 +56,16 @@ export default function createAddBookEndpoint ( app, db ) : void {
 
             }, () => {
                 //The book does not exist
-                res.send("Book does not exist in catalogue")
-                
+                if ( req.query.ISBN && req.query.title && req.query.authors ) {
+                    addNewBook(db, req.query.numberToAdd, req.query.ISBN, req.query.title, req.query.authors, res);
+                }
             });
     })
 }
+
+
+
+
 
 function bookExists(db, ISBN) {
     return new Promise ((resolve,reject) => {
