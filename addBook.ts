@@ -10,10 +10,15 @@ export default function createAddBookEndpoint ( app, db ) : void {
                 let constistent = true;
                 if (req.query.title && req.query.title != bookInfo.title) {
                     constistent = false;
-                    res.send(`Title is inconsistent. Query= ${req.query.title}, bookInfo= ${bookInfo.title}`);
                 } else {
-                    res.send('Consistent with title')
                 }
+
+                if(req.query.authors && !compareAuthorArrays(req.query.authors, bookInfo.authors)) {
+                    constistent = false;
+                    res.send(`Inconsistent authors. Query= ${req.query.authors}, bookInfo= ${bookInfo.authors}`);
+                } else {
+                    res.send('Consistent authors');
+                };
 
 
             }, () => {
@@ -46,4 +51,8 @@ function bookExists(db, ISBN) {
             })
             .catch(e=>console.log(e));
     });
+}
+
+function compareAuthorArrays(arr1, arr2) {
+    return (arr1.sort().join() === arr2.sort().join());
 }
