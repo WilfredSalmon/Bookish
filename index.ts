@@ -2,6 +2,7 @@ import TokenHandler from './tokenHandler';
 import createLoansEndpoint from './loans';
 import createSearchEndpoint from './search';
 import Catalogue from './catalouge';
+import createAddBookEndpoint from "./addBook";
 
 const express = require('express');
 const pgp = require('pg-promise')();
@@ -19,6 +20,10 @@ TokenHandler.setUpPassportVerification(db);
 Catalogue.updateDataBase(db);
 app.use('/Catalogue', Catalogue.router);
 
+createLoansEndpoint(app,db);
+createSearchEndpoint(app,db);
+createAddBookEndpoint(app,db);
+
 app.get('/login', (req,res) => {
     const username : string = req.query.username.toLowerCase();
     const password : string = req.query.password;
@@ -34,9 +39,5 @@ app.get('/login', (req,res) => {
         .catch( e => console.log(e));
 
 });
-
-createLoansEndpoint(app,db);
-
-createSearchEndpoint(app,db);
 
 app.listen(port, () => console.log(`Bookish listening on port ${port}!`));
