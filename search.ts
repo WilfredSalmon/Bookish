@@ -1,6 +1,6 @@
 import TokenHandler from './tokenHandler';
 
-export default function createSearchEndpoint ( app, db ) {
+export default function createSearchEndpoint ( app, db ) : void {
     app.get('/search', TokenHandler.tokenAuthentication, (req,res) => {
         const title : string = req.query.title;
         const author : string = req.query.author;
