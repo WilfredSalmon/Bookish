@@ -1,5 +1,31 @@
 import TokenHandler from './tokenHandler';
 
+function addBookAlreadyInCatalogue(db,numberToAdd:number,ISBN:string) {
+    if (!numberToAdd) {
+        const numberToAdd = 1;
+    }
+
+    const query = `INSERT INTO public."Books" "ISBN",available VALUES ($1,true)`
+    for(let i =0;i<numberToAdd;i++) {
+        db.one(query, ISBN).catch(e => console.log(e));
+    }
+
+}
+
+function checkConsistency(req, bookInfo: any,res) {
+    let consistent = true;
+    if (req.query.title && req.query.title != bookInfo.title) {
+        consistent = false;
+        res.send(`Inconsistent titles. Query= ${req.query.title}, bookInfo= ${bookInfo.title}`);
+    }
+
+    if (req.query.authors && !compareAuthorArrays(req.query.authors, bookInfo.authors)) {
+        consistent = false;
+        res.send(`Inconsistent authors. Query= ${req.query.authors}, bookInfo= ${bookInfo.authors}`);
+    }
+    return consistent;
+}
+
 export default function createAddBookEndpoint ( app, db ) : void {
     app.get('/add', TokenHandler.tokenAuthentication, (req,res) => {
         const ISBN = req.query.ISBN;
@@ -7,18 +33,9 @@ export default function createAddBookEndpoint ( app, db ) : void {
         bookExists(db, ISBN)
             .then ( (bookInfo:any) => {
                 //The book already exists
-                let constistent = true;
-                if (req.query.title && req.query.title != bookInfo.title) {
-                    constistent = false;
-                } else {
+                if (checkConsistency(req, bookInfo,res)) {
+                    addBookAlreadyInCatalogue(db,req.numberToAdd,bookInfo.ISBN);
                 }
-
-                if(req.query.authors && !compareAuthorArrays(req.query.authors, bookInfo.authors)) {
-                    constistent = false;
-                    res.send(`Inconsistent authors. Query= ${req.query.authors}, bookInfo= ${bookInfo.authors}`);
-                } else {
-                    res.send('Consistent authors');
-                };
 
 
             }, () => {
