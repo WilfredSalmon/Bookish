@@ -14,7 +14,7 @@ class Catalogue {
 
     displayCatalogue(req,res) {
         const query : string = `
-            SELECT title, STRING_AGG(Authored."authorName", ', ') as authors, isbn, available, total
+            SELECT title, STRING_AGG(authored."authorName", ', ') as authors, isbn, available, total
             FROM (
                 SELECT title, book."ISBN" as isbn, sum(case when available then 1 else 0 end) as available, count(*) as total
                 FROM public."BookInfo" as book

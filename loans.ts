@@ -1,6 +1,6 @@
 import TokenHandler from './tokenHandler';
 
-export default function createLoansEndpoint ( app, db ) {
+export default function createLoansEndpoint ( app, db ) : void {
     app.get('/loans', TokenHandler.tokenAuthentication, (req,res) => {
     const username : string = req.user;
     const query : string = `
