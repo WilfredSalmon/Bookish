@@ -1,6 +1,6 @@
 import TokenHandler from './tokenHandler';
 
-export default function createAddEndpoint ( app, db ) : void {
+export default function createAddBookEndpoint ( app, db ) : void {
     app.get('/add', TokenHandler.tokenAuthentication, (req,res) => {
         const ISBN = req.query.ISBN;
 
