@@ -7,20 +7,26 @@ function addBookAlreadyInCatalogue(db,numberToAdd:number = 1,ISBN:string,res) {
     const query = `INSERT INTO public."Books" ("ISBN",available) VALUES ($1,true) RETURNING id`;
 
     const barcodePromises = [];
-
+    res.contentType('image/png');
     for(let i =0;i<numberToAdd;i++) {
-        db.any(query, ISBN).catch(e => console.log(e))
+        barcodePromises.push(db.any(query, ISBN)
             .then( id => {
-                barcodePromises.push(new Promise(resolve => {
-                        return request(`http://barcodes4.me/barcode/c128b/${id[0].id}-${ISBN}.png`, (error, response, body) => resolve(body))
+                return new Promise(resolve => {
+                    console.log(`http://barcodes4.me/barcode/c128b/${id[0].id}-${ISBN}.png`);
+                    request(`http://barcodes4.me/barcode/c128b/${id[0].id}-${ISBN}.png`,{encoding: 'binary'}, (error, response, body) => /*{res.send(body , {encoding: 'binary'});*/resolve(body))
                     }
-                ))
-            });
+                )
+            })
+            .catch(e => console.log(e)))
     }
 
-    Promise.all(barcodePromises).then( images => images.map(image => console.log('logging an image')) );
-
-    res.send('done')
+    // Promise.all(barcodePromises).then( images => images.map( image => new Buffer(image, 'base64') ).then(() => res.end());
+    Promise.all(barcodePromises).then( images => {
+        res.contentType('application/json');
+        res.send({
+            images: images
+        });
+    } );
 
 }
 
