@@ -13,24 +13,15 @@ export default function createSearchEndpoint ( app, db ) : void {
         }
     
         let sql : string = `
-            SELECT * 
+            SELECT book."ISBN", book.title, ARRAY_AGG(authored."authorName") as authors
             FROM public."BookInfo" as book 
             JOIN public."AuthoredBy" as authored 
                 ON authored."ISBN" = book."ISBN" 
-            WHERE ${condition}`;
+            WHERE ${condition}
+            GROUP BY book."ISBN", book.title`;
     
         db.any(sql)
-            .then(data => {
-                let result = new Object();
-                for ( let item of data ) {
-                    if ( result[item.ISBN] === undefined ) {
-                        result[item.ISBN] = { title : item.title, authors : [item.authorName] };
-                    } else {
-                        result[item.ISBN].authors.push(item.authorName);
-                    }
-                }
-                res.json(result);
-            })
+            .then(data => res.json(data) )
             .catch(e=>console.log(e));
     })
 
