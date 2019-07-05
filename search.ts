@@ -23,7 +23,7 @@ export default function createSearchEndpoint ( app, db ) : void {
         db.any(sql)
             .then(data => res.json(data) )
             .catch(e=>console.log(e));
-    })
+    });
 
     function getCondition(title, author) {
         if ( title === undefined ) {
