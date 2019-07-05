@@ -4,21 +4,12 @@ export default function createSearchEndpoint ( app, db ) : void {
     app.get('/search', TokenHandler.tokenAuthentication, (req,res) => {
         const title : string = req.query.title;
         const author : string = req.query.author;
-    
-        let condition : string;
-        if ( title === undefined ) {
-            if ( author === undefined ) {
-                res.error('No search parameters');
-                return;
-            } else {
-                condition = `"authorName" LIKE UPPER('%${author.toUpperCase()}%')`;
-            }
-        } else {
-            if ( author === undefined ) {
-                condition = `title LIKE UPPER('%${title.toUpperCase()}%')`;
-            } else {
-                condition = `"authorName" LIKE UPPER('%${author.toUpperCase()}%') AND title LIKE UPPER('%${title.toUpperCase()}%')`;
-            }
+
+        const condition = getCondition(title, author);
+
+        if (!condition) {
+            res.error('No search parameters');
+            return;
         }
     
         let sql : string = `
@@ -41,5 +32,17 @@ export default function createSearchEndpoint ( app, db ) : void {
                 res.json(result);
             })
             .catch(e=>console.log(e));
-    });
+    })
+
+    function getCondition(title, author) {
+        if ( title === undefined ) {
+            return author === undefined
+                ? null
+                : `"authorName" LIKE UPPER('%${author.toUpperCase()}%')`;
+        }
+
+        return author === undefined
+            ? `title LIKE UPPER('%${title.toUpperCase()}%')`
+            : `"authorName" LIKE UPPER('%${author.toUpperCase()}%') AND title LIKE UPPER('%${title.toUpperCase()}%')`;
+    }
 }
