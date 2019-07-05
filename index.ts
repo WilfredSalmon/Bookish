@@ -18,7 +18,7 @@ console.log('logged into db');
 
 TokenHandler.setUpPassportVerification(db);
 
-Catalogue.updateDataBase(db
+Catalogue.updateDataBase(db);
 app.use('/Catalogue', Catalogue.router);
 
 createLoginEndpoint(app,db);
